@@ -1,0 +1,339 @@
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: TLSStore
+# metadata:
+#   name: default
+# spec:
+#   defaultCertificate:
+#     secretName: traefik-tls-cert
+
+# ---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: security
+#   namespace: confluence
+# spec:
+#   headers:
+#     frameDeny: true
+#     sslRedirect: true
+#     browserXssFilter: true
+#     contentTypeNosniff: true
+#     stsIncludeSubdomains: true
+#     stsPreload: true
+#     stsSeconds: 31536000
+
+# ---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: TLSOption
+# metadata:
+#   name: tlsoptions
+#   namespace: confluence
+# spec:
+#   minVersion: VersionTLS12
+#   cipherSuites:
+#     - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384   # TLS 1.2
+#     - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305    # TLS 1.2
+#     - TLS_AES_256_GCM_SHA384                  # TLS 1.3
+#     - TLS_CHACHA20_POLY1305_SHA256            # TLS 1.3
+#   curvePreferences:
+#     - CurveP521
+#     - CurveP384
+#   sniStrict: true
+
+
+# ######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`k8s-traefik.okbtsp.com`) # Hostname to match
+      middlewares:
+        - name: traefik-dashboard-basicauth
+          namespace: traefik
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+
+
+# ######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: messenger-server
+  namespace: messenger-server
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`chat.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: messenger-svc
+          kind: Service
+          port: 8065
+          passHostHeader: true
+          responseForwarding:
+            flushInterval: 1ms
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+          
+          
+          
+# ######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jira
+  namespace: jira
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jira.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: jira
+          kind: Service
+          port: 80
+          passHostHeader: true
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+              sameSite: none
+          strategy: RoundRobin
+
+# ######################################################################################
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bitbucket
+  namespace: bitbucket
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`repo.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: bitbucket
+          kind: Service
+          port: 80
+          passHostHeader: true
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+              sameSite: none
+          strategy: RoundRobin
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: bitbucket-ssh
+  namespace: bitbucket
+spec:
+  entryPoints:                  
+    - repo-ssh
+  routes:                       
+  - match: HostSNI(`*`)         
+    services:                   
+    - name: bitbucket                 
+      port: 7999                
+
+# ######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bamboo
+  namespace: bamboo
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`k8s-bamboo.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: bamboo-external-svc
+          kind: Service
+          port: 8085
+          passHostHeader: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: bamboo-ssh
+  namespace: bamboo
+spec:
+  entryPoints:                  
+    - bamboo-ssh
+  routes:                       
+  - match: HostSNI(`*`)         
+    services:                   
+    - name: bamboo-external-svc               
+      port: 54663 
+
+
+# ######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: prometheus-stack-grafana
+          kind: Service
+          port: 80
+          passHostHeader: true
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+              sameSite: none
+          strategy: RoundRobin  
+
+
+######################################################################################
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: confluence
+  namespace: confluence
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`wiki.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: confluence
+          kind: Service
+          port: 80
+          passHostHeader: true
+     
+          
+######################################################################################
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: artifactory
+  namespace: jfrog
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`k8s-jfrog.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: artifactory-external
+          kind: Service
+          port: 8082
+          passHostHeader: true
+  
+ 
+# ######################################################################################
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kibana
+  namespace: kube-logging
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kibana.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: kibana
+          kind: Service
+          port: 5601
+          passHostHeader: true
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+              sameSite: none
+          strategy: RoundRobin          
+ 
+# ######################################################################################
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: awx
+  namespace: awx
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.options: security-tls@file
+    traefik.ingress.kubernetes.io/router.middlewares: security-middlewares@file
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`k8s-awx.okbtsp.com`) # Hostname to match
+      kind: Rule
+      services: # Service to redirect requests to
+        - name: awx-service
+          kind: Service
+          port: 80
+

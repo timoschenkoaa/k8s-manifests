@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-confluence-postgresql
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: confluence
+    name: pvc-confluence-postgresql
+  nfs:
+    path: /Confluence-Postgres
+    server: 10.10.150.126
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-confluence-postgresql
+  namespace: confluence
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi   
+  volumeName: pv-confluence-postgresql     
+  

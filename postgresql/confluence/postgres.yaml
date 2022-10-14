@@ -1,0 +1,87 @@
+          
+# # PostgreSQL StatefulSet
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: postgresql
+#   namespace: confluence
+# spec:
+#   serviceName: postgresql-svc
+#   selector:
+#     matchLabels:
+#       app: confluence-postgresql
+#   replicas: 1
+#   template:
+#     metadata:
+#       labels:
+#         app: confluence-postgresql
+#     spec:
+#       initContainers:
+#       - name: chmod-er
+#         image: busybox:latest
+#         command: ["sh", "-c", "chown -R 1000:1000 /data"]
+#         securityContext:
+#           runAsUser: 0
+#         volumeMounts:
+#         - name: postgresql-data
+#           mountPath: /data
+#       containers:
+#         - name: confluence-postgresql
+#           image: postgres:latest
+#           ports:
+#             - containerPort: 5432
+#           volumeMounts:
+#             - name: postgresql-data
+#               mountPath: /data
+#           envFrom:
+#             - configMapRef:
+#                 name: postgres-config    
+#       volumes:
+#         - name: postgresql-data
+#           persistentVolumeClaim:
+#             claimName: pvc-confluence-postgresql       
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: confluence
+  labels:
+    app: postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      hostname: postgresql
+      subdomain: postgresql-svc
+      initContainers:
+      - name: chmod-er
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 1000:1000 /data"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /data
+      containers:
+        - name: postgresql
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /data
+          envFrom:
+            - configMapRef:
+                name: postgres-config    
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: pvc-confluence-postgresql 

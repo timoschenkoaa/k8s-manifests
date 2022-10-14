@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-bamboo-postgresql
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: bamboo
+    name: pvc-bamboo-postgresql
+  nfs:
+    path: /Bamboo-Postgres
+    server: 10.10.150.126
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-bamboo-postgresql
+  namespace: bamboo
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi   
+  volumeName: pv-bamboo-postgresql     

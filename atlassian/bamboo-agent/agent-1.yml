@@ -1,0 +1,121 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bamboo-agent
+  namespace: bamboo
+  labels:
+    app: agent
+spec:
+  serviceName: agent
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+    spec:
+      terminationGracePeriodSeconds: 300
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      # initContainers:
+      #   - name: fix-permissions
+      #     image: busybox
+      #     command: ["sh", "-c", "chown -R 1000:1000 /home/bamboo/"]
+      #     securityContext:
+      #       privileged: true   
+      #     volumeMounts:
+      #       - mountPath: "/home/bamboo/"
+      #         name: bamboo-agent-workdir
+      containers:
+        - name: agent
+          image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7 
+          resources:
+            requests:
+              cpu: 12
+              memory: 12Gi
+            limits:
+              cpu: 16
+              memory: 16Gi
+          ports:
+            - containerPort: 54663
+              name: agent
+              protocol: TCP
+          command: ["/entrypoint.sh","https://bamboo.okbtsp.com"]
+          env:
+            - name: VM_OPTS
+              value: '-XX:MaxRAM=8g'
+            - name: QT_PLUGIN_PATH
+              value: '/home/user/Qt/5.7/gcc_64/plugins/'
+            - name: JFROG_MAIN
+              value: jfrog-main
+          volumeMounts:
+          - name: docker-sock
+            mountPath: /var/run/docker.sock
+          - name: bamboo-agent-workdir
+            mountPath: /home/bamboo/bamboo-agent-home
+          - name: entrypoint
+            mountPath: /entrypoint.sh
+            subPath: entrypoint.sh
+          - name: maven
+            mountPath: /etc/maven/settings.xml
+            subPath: settings.xml
+          - name: ciuser
+            mountPath: /var/secrets/ciuser
+            subPath: ciuser
+          - name: cipass
+            mountPath: /var/secrets/cipassword
+            subPath: cipassword
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: "/var/run/docker.sock"  
+        - name: entrypoint
+          configMap:
+            name: entrypoint
+            defaultMode: 0777
+        - name: maven
+          configMap:
+            name: maven
+            defaultMode: 0755
+        - name: ciuser
+          configMap:
+            name: ciuser
+            defaultMode: 0755
+        - name: cipass
+          configMap:
+            name: cipass
+            defaultMode: 0755
+
+  volumeClaimTemplates:
+  - metadata:
+      name: bamboo-agent-workdir
+      labels:
+        app: agent
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: nfs-csi
+      resources:
+        requests:
+          storage: 15Gi              
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent
+  namespace: bamboo
+  labels:
+    app: agent
+spec:
+  type: ClusterIP
+  ports:
+    - name: agent
+      port: 54663
+      targetPort: 54663
+      protocol: TCP  
+  selector:
+    app: agent                        

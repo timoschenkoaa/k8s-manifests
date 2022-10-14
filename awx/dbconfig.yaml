@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: awx-postgres-configuration
+  namespace: awx
+stringData:
+  host: awx-postgres-0.awx-postgresql-svc.awx.svc.cluster.local
+  port: '5432'
+  database: 'ansible-awx'
+  username: limiteduser
+  password: NBRNgzznATn4f4wnskKFx8x
+  sslmode: prefer
+  type: unmanaged
+type: Opaque

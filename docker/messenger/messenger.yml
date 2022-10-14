@@ -1,0 +1,54 @@
+version: '3.7'
+
+services:
+  messenger:
+    image: registry.okbtsp.com/tsp-messenger/server:0.2.22  # TSP-Messenger
+    deploy:
+      labels:
+        - traefik.docker.network=traefik_internal
+        - traefik.http.routers.messenger.rule=Host(`chat.okbtsp.com`)
+        - traefik.http.services.messenger.loadbalancer.server.port=8065
+        - traefik.http.routers.messenger.tls=true
+        - traefik.http.routers.messenger.entrypoints=websecure
+        - traefik.http.services.messenger.loadbalancer.server.scheme=http
+        - traefik.http.services.messenger.loadbalancer.passhostheader=true
+       
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+     
+    volumes:
+      - chat_data:/home/messenger/messenger-server-home/chat_data
+      - chat_log:/home/messenger/messenger-server-home/chat_log
+
+
+    networks:
+      - traefik_internal
+
+    secrets:
+      - source: config.json
+        target: /home/messenger/messenger-server-home/config/config.json
+        mode: 0755
+      - source: firebase.json
+        target: /home/messenger/messenger-server-home/config/tsp-messenger-9396d.json
+        mode: 0755  
+        
+
+networks:
+  traefik_internal:
+    external: true
+    name: traefik_internal
+
+volumes:
+  chat_data:
+    external: true        
+  chat_log:
+    external: true
+secrets:
+  config.json:
+    external: true
+    name: chat-config.json
+  firebase.json:
+    external: true
+    name: firebase-config.json

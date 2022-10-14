@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: bamboo
+  name: cipass
+  labels:
+    app: bamboo-agent-1
+data:
+  cipassword: |
+    BRRXksBn3Rg7Bh7Q

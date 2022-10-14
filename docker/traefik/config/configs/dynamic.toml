@@ -1,0 +1,197 @@
+[http]
+  # Add the route
+  [http.routers]
+
+    [http.routers.route-cloud-infin]
+      entryPoints = ["websecure"]
+      service = "service-clound-infin"
+      rule = "Host(`cloud.in-fin.by`)"
+      [http.routers.route-cloud-infin.tls]
+        [[http.routers.route-cloud-infin.tls.domains]]
+          main = "in-fin.by"
+          sans = ["*.in-fin.by"]
+
+    [http.routers.route-1c]
+      entryPoints = ["websecure"]
+      service = "service-1c"
+      rule = "Host(`srv-1c.okbtsp.com`)"
+      [http.routers.route-1c.tls]
+
+    [http.routers.route-sdc]
+      entryPoints = ["websecure"]
+      service = "service-sdc"
+      rule = "Host(`srv-sdc.okbtsp.com`)"
+      [http.routers.route-sdc.tls]
+
+    [http.routers.route-support]
+      entryPoints = ["websecure"]
+      service = "service-support"
+      rule = "Host(`support.okbtsp.com`)"
+      [http.routers.route-support.tls]
+
+    [http.routers.route-dream]
+      entryPoints = ["websecure"]
+      service = "service-dream"
+      rule = "Host(`dream.okbtsp.com`)"
+      [http.routers.route-dream.tls]
+
+    [http.routers.route-biathlonproject]
+      entryPoints = ["websecure"]
+      service = "service-biathlonproject"
+      rule = "Host(`biathlonproject.okbtsp.com`)"
+      [http.routers.route-biathlonproject.tls]
+
+    [http.routers.route-talent]
+      entryPoints = ["websecure"]
+      service = "service-talent"
+      rule = "Host(`talent.okbtsp.com`)"
+      [http.routers.route-talent.tls]
+
+    [http.routers.route-cloud-bysky]
+      entryPoints = ["websecure"]
+      service = "service-cloud-bysky"
+      rule = "Host(`cloud.bysky.by`)"
+      [http.routers.route-cloud-bysky.tls]
+        [[http.routers.route-cloud-infin.tls.domains]]
+          main = "bysky.by"
+          sans = ["*.bysky.by"]
+
+    [http.routers.route-mail]
+      entryPoints = ["websecure"]
+      service = "service-mail"
+      rule = "Host(`mail.okbtsp.com`)"
+      [http.routers.route-mail.tls]
+
+    [http.routers.route-cloud]
+      entryPoints = ["websecure"]
+      service = "service-cloud"
+      rule = "Host(`cloud.okbtsp.com`)"
+      [http.routers.route-cloud.tls]
+
+#    [http.routers.hg]
+#      entryPoints = ["websecure"]
+#      service = "service-hg"
+#      middlewares = ["redirect-hg"]
+#      rule = "Host(`hg.okbtsp.com`)"
+#      [http.routers.hg.tls]
+
+
+#------------ services --------------------------------
+
+  [http.services]
+    [http.services.service-cloud-infin.loadBalancer]
+      [[http.services.service-INFIN.loadBalancer.servers]]
+        url = "http://10.10.93.15/"
+
+    [http.services.service-nexus2.loadBalancer]
+      [[http.services.service-nexus2.loadBalancer.servers]]
+        url = "http://10.10.7.13:8081"
+
+    [http.services.service-hg.loadBalancer]
+      [[http.services.service-hg.loadBalancer.servers]]
+        url = "http://10.10.7.66:80"
+
+    [http.services.service-1c.loadBalancer]
+      [[http.services.service-1c.loadBalancer.servers]]
+        url = "http://10.10.7.80:80"
+
+    [http.services.service-sdc.loadBalancer]
+      [[http.services.service-sdc.loadBalancer.servers]]
+        url = "https://10.10.7.38:443"
+
+    [http.services.service-dream.loadBalancer]
+      [[http.services.dream.loadBalancer.servers]]
+        url = "http://10.10.7.21"
+
+    [http.services.biathlonproject.loadBalancer]
+      [[http.services.biathlonproject.loadBalancer.servers]]
+        url = "http://10.10.7.37"
+
+    [http.services.talent.loadBalancer]
+      [[http.services.talent.loadBalancer.servers]]
+        url = "http://10.10.7.37"
+
+#---------- middlewares ------------------------------
+
+  [http.middlewares]
+    [http.middlewares.add-nexus.addPrefix]
+      prefix = "/nexus"
+
+    [http.middlewares.redirect-nexus.redirectRegex]
+      regex = "^https:\\/\\/([^\\/]+)\\/?$$"
+      replacement = "https://$1/nexus"
+
+    [http.middlewares.redirect-hg.redirectRegex]
+      regex = "^https:\\/\\/([^\\/]+)\\/?$$"
+      replacement = "https://$1/hgweb.cgi"
+
+#---------TCP---------------------------------------
+
+[tcp]
+  [tcp.routers]
+    [tcp.routers.mail-imap]
+      entryPoints = ["imap"]
+      rule  = "HostSNI(`mail.okbtsp.com`)"
+      service = "mail-imap"
+    
+    [tcp.routers.mail-smtps]
+      entryPoints = ["smtps"]
+      rule  = "HostSNI(`mail.okbtsp.com`)"
+      service = "mail-smtps"
+      [tcp.routers.mail-smtps.tls]
+
+    [tcp.routers.mail-smtp]
+      entryPoints = ["smtp"]
+      rule  = "HostSNI(`mail.okbtsp.com`)"
+      service = "mail-smtp"
+
+    [tcp.routers.mail-imaps]
+      entryPoints = ["imaps"]
+      rule  = "HostSNI(`mail.okbtsp.com`)"
+      service = "mail-imaps"
+      [tcp.routers.mail-imaps.tls]
+
+    [tcp.routers.mail-ssmtp]
+      entryPoints = ["ssmtp"]
+      rule  = "HostSNI(`mail.okbtsp.com`)"
+      service = "mail-ssmtp"
+      [tcp.routers.mail-ssmtp.tls]
+
+
+  [tcp.services]
+    [tcp.services.mail-imap.loadBalancer]
+      [[tcp.services.mail-imap.loadBalancer.servers]]
+        address = "10.10.7.54:143"
+
+    [tcp.services.mail-smtp.loadBalancer]
+      [[tcp.services.mail-smtp.loadBalancer.servers]]
+        address = "10.10.7.54:25"
+
+    [tcp.services.mail-imaps.loadBalancer]
+      [[tcp.services.mail-imaps.loadBalancer.servers]]
+        address = "10.10.7.54:993"
+
+    [tcp.services.mail-ssmtp.loadBalancer]
+      [[tcp.services.mail-ssmtp.loadBalancer.servers]]
+        address = "10.10.7.54:587"
+
+    [tcp.services.mail-smtps.loadBalancer]
+      [[tcp.services.mail-imap.loadBalancer.servers]]
+        address = "10.10.7.54:465"
+
+
+
+#-------- certificates ------------------------------
+
+[tls]
+  [[tls.certificates]]
+    certFile = "/certs/okbtsp.com/Certificate.crt"
+    keyFile = "/certs/okbtsp.com/Certificate.key"
+
+  [[tls.certificates]]
+    certFile = "/certs/infin.by/Certificate.crt"
+    keyFile = "/certs/infin.by/Certificate.key"
+
+  [[tls.certificates]]
+    certFile = "/certs/infin.by/Certificate.crt"
+    keyFile = "/certs/infin.by/Certificate.key"

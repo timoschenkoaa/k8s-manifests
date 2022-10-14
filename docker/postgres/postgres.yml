@@ -1,0 +1,55 @@
+version: "3.6"
+
+services:
+  primary:
+    hostname: 'primary'
+    image: postgres:9.6
+    environment:
+    - POSTGRES_PASSWORD=NBRNgzznATn4f4wnskKFx8x
+    - POSTGRES_USER=limiteduser
+    - POSTGRES_DB=main
+    volumes:
+    - pgdata1:/pgdata
+
+    networks:
+    - docker_net
+    ports:
+      - 5432:5432
+        
+    deploy:
+      resources:
+        reservations:
+          memory: 4G
+          cpus: '2.0'
+
+  second:
+    hostname: 'second'
+    image: postgres:13.5
+    environment:
+    - POSTGRES_PASSWORD=NBRNgzznATn4f4wnskKFx8x
+    - POSTGRES_USER=limiteduser
+    - POSTGRES_DB=main
+   
+    volumes:
+    - pgdata2:/pgdata
+
+    networks:
+    - docker_net
+    ports:
+      - 5433:5432
+        
+    deploy:
+      resources:
+        reservations:
+          memory: 4G
+          cpus: '2.0'
+volumes:
+  pgdata1:
+    external: true
+  pgdata2:
+    external: true  
+
+networks:
+  docker_net:
+    external: true
+    name: docker_net

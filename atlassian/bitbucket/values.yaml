@@ -1,0 +1,114 @@
+replicaCount: 1
+image:
+  repository: atlassian/bitbucket:8.3.0
+  pullPolicy: IfNotPresent
+  tag: ""
+database:
+  url: jdbc:postgresql://bitbucket-postgresql-svc.bitbucket.svc.cluster.local:5432/bitbucket
+  driver: org.postgresql.Driver
+  credentials:
+    secretName: bitbucket-postgres
+    usernameSecretKey: username
+    passwordSecretKey: password
+
+volumes:
+  localHome:
+    persistentVolumeClaim:
+      create: true
+      storageClassName: nfs-csi
+      resources:
+        requests:
+          storage: 50Gi
+    mountPath: "/var/atlassian/application-data/bitbucket"
+  sharedHome:
+    # persistentVolumeClaim:
+    #   create: true
+    #   storageClassName: nfs-csi
+    #   resources:
+    #     requests:
+    #       storage: 50Gi
+    customVolume:
+      persistentVolumeClaim:
+        claimName: pvc-bitbucket-shared
+    mountPath: "/var/atlassian/application-data/shared-home"        
+
+   
+# Bitbucket configuration
+
+bitbucket:
+  service:
+    port: 80
+    type: ClusterIP
+  sshService:
+    enabled: false
+  securityContext:
+    fsGroup: 2003
+  ports:
+    http: 7990
+    ssh: 7999
+    hazelcast: 5701
+
+  license:
+    secretName: bitbucket-license
+    secretKey: license
+
+  sysadminCredentials:
+    secretName: bitbucket-admin
+    usernameSecretKey: username
+    passwordSecretKey: password
+    displayNameSecretKey: displayName
+    emailAddressSecretKey: emailAddress
+
+  # Data Center clustering
+  
+  clustering:
+    enabled: true
+    
+  elasticSearch:
+    baseUrl: http://elasticsearch.kube-logging.svc.cluster.local:9200
+ 
+
+  shutdown:
+    terminationGracePeriodSeconds: 35
+    command: "/shutdown-wait.sh"
+
+  podManagementStrategy: OrderedReady
+
+  # Pod resource requests
+  #
+  resources:
+    jvm:
+    
+      # -- The maximum amount of heap memory that will be used by the Bitbucket JVM
+      # The same value will be used by the Elasticsearch JVM.
+      maxHeap: "8g"
+      
+      # -- The minimum amount of heap memory that will be used by the Bitbucket JVM
+      # The same value will be used by the Elasticsearch JVM.
+      minHeap: "512m"
+
+    container:
+      requests:
+        cpu: "2" # -- If changing the cpu value update additional JVM arg 'ActiveProcessorCount' below
+        memory: "8G"
+      limits:
+        cpu: "2"
+        memory: "8G"
+
+  applicationMode: "default"
+
+  
+  additionalJvmArgs:
+    - -XX:ActiveProcessorCount=2
+    - -Datlassian.plugins.enable.wait=300
+    - -DXX:MaxRAM=8g
+
+fluentd:
+
+  # -- Set to 'true' if the Fluentd sidecar (DaemonSet) should be added to each pod
+  enabled: true
+  imageName: fluent/fluentd-kubernetes-daemonset:v1.11.5-debian-elasticsearch7-1.2
+  # Elasticsearch config based on your ELK stack
+  elasticsearch:
+    enabled: true
+    hostname: elasticsearch.kube-logging.svc.cluster.local

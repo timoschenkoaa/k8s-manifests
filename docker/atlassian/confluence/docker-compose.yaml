@@ -1,0 +1,5 @@
+version: '3.7'
+services:
+  confluence-server:
+    build: .
+    image: registry.okbtsp.com/devops/confluence-server:7.3.5

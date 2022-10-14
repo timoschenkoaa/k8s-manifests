@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-traefik-certs
+spec:
+  capacity:
+    storage: 512m
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: traefik
+    name: pvc-traefik-certs
+  nfs:
+    path: /Traefik-Certs
+    server: 10.10.150.126
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-traefik-certs
+  namespace: traefik
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512m    
+  volumeName: pv-traefik-certs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: docker
+  namespace: messenger-server
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  local:
+    path: /var/run/docker.sock
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - example-node   

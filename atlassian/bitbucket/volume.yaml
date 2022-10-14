@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-bitbucket-shared
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: bitbucket
+    name: pvc-bitbucket-shared
+  nfs:
+    path: /Bitbucket-Shared
+    server: 10.10.150.126
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-bitbucket-shared
+  namespace: bitbucket
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi   
+  volumeName: pv-bitbucket-shared  

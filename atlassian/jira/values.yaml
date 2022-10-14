@@ -1,0 +1,84 @@
+## Atlassian Jira Data Center Helm values
+replicaCount: 2
+image:
+  repository: atlassian/jira-core
+  pullPolicy: IfNotPresent
+  tag: "8.14.0"
+database: 
+  type: 'postgres72'
+  url: 'jdbc:postgresql://jira-postgresql-svc.jira.svc.cluster.local:5432/jira'
+  driver: 'org.postgresql.Driver'
+  credentials:
+    secretName: jira-postgres
+    usernameSecretKey: username
+    passwordSecretKey: password
+volumes:
+  localHome:
+    persistentVolumeClaim:
+      create: true
+      storageClassName: nfs-csi
+      resources:
+        requests:
+         storage: 25Gi
+    mountPath: "/var/atlassian/application-data/jira"
+  sharedHome:
+    persistentVolumeClaim:
+      create: true
+      storageClassName: nfs-csi
+      resources:
+        requests:
+          storage: 2Gi
+    mountPath: "/var/atlassian/application-data/shared-home/indexsnapshots"
+    # nfsPermissionFixer:
+    #   enabled: true
+    #   mountPath: "/shared-home"
+      
+# Jira configuration
+jira:
+  service:
+    port: 80
+    type: ClusterIP
+  securityContext:
+    fsGroup: 2001
+  setPermissions: true
+  ports:
+    http: 8080
+    ehcache: 40001
+    ehcacheobject: 40011
+ 
+  # Data Center clustering
+  clustering:
+    enabled: false
+  # Jira licensing details
+  license:
+    secretName: jira-license
+    secretKey: license
+  # Pod resource requests
+  resources:
+    jvm:
+      maxHeap: "12288m"
+      minHeap: "8192m"
+      reservedCodeCache: "512m"
+    container:
+      requests:
+        cpu: "2" # If changing the cpu value update 'ActiveProcessorCount' below
+        memory: "8G"
+      limits:
+        cpu: "4"
+        memory: "12G"
+  additionalJvmArgs:
+    - -XX:ActiveProcessorCount=2
+  additionalEnvironmentVariables:
+    - name: CATALINA_CONNECTOR_PROXYNAME
+      value: jira.okbtsp.com
+    - name: CATALINA_CONNECTOR_SCHEME
+      value: "https"
+    - name: CATALINA_CONNECTOR_SECURE
+      value: "true"
+
+additionalFiles:
+  - name: jira-config-web
+    type: configMap
+    key: server.xml
+    mountPath: /opt/atlassian/jira/conf/
+

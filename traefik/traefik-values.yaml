@@ -1,0 +1,100 @@
+deployment:
+  enabled: true
+  kind: DaemonSet
+  additionalVolumes:
+    - name: docker
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket   
+spec:
+  values:
+    ingressRoute:
+      dashboard:
+        enabled: true
+securityContext:
+  capabilities:
+    drop: [ALL]
+    add: [NET_BIND_SERVICE]
+  readOnlyRootFilesystem: true
+  runAsGroup: 0
+  runAsNonRoot: false
+  runAsUser: 0        
+
+additionalArguments:
+  - "--log.level=DEBUG"
+  - "--ping"
+  - "--entrypoints.web.address=:80"
+  - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+  - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+  - "--entrypoints.websecure.address=:443"
+  - "--entrypoints.websecure.http.tls"
+  - "--providers.file.filename=/config/dynamic.toml"
+   
+# env:
+  # - name: dynamic.toml
+  #   valueFrom:
+  #     configMapRef:
+  #       name: dynamic.toml
+  #       key: dynamic.toml
+  # - name: cert 
+  #   valueFrom:
+  #     secretKeyRef:
+  #       key: tls.crt
+  #       name: traefik-tls-cert
+  # - name: cert-key
+  #   valueFrom:
+  #     secretKeyRef:
+  #       key: tls.key
+  #       name: traefik-tls-cert            
+volumes:
+- name: dynamic-toml
+  mountPath: "/config"
+  type: configMap
+
+additionalVolumeMounts:
+  - name: docker
+    mountPath: /var/run/docker.sock
+  
+persistence:
+  enabled: true
+  name: certs
+  existingClaim: "pvc-traefik-certs"
+  path: /certs
+
+service:
+  spec:
+    loadBalancerIP: "10.10.150.4"
+
+ports:
+
+  traefik:
+    port: 9000
+    expose: true
+    exposedPort: 9000
+    protocol: TCP
+  web:
+    port: 80
+    expose: true
+    exposedPort: 80
+    protocol: TCP
+    redirectTo: websecure
+  websecure:
+    port: 443
+    expose: true
+    exposedPort: 443
+    protocol: TCP
+  repo-ssh:
+    port: 7999
+    expose: true
+    exposedPort: 7999
+    protocol: TCP
+  bamboo-ssh:
+    port: 54663
+    expose: true
+    exposedPort: 54663
+    protocol: TCP  
+  ssh:
+    port: 22
+    expose: true
+    exposedPort: 22
+    protocol: TCP  

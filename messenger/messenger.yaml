@@ -1,0 +1,56 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messenger
+  namespace: messenger-server
+  labels:
+    app: messenger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messenger
+  template:
+    metadata:
+      labels:
+        app: messenger
+    spec:
+      hostname: messenger
+      subdomain: messenger-svc
+      containers:
+        - name: messenger
+          image: registry.okbtsp.com/tsp-messenger/server:0.2.21
+          ports:
+            - containerPort: 8065
+          volumeMounts:
+            - name: messenger-data
+              mountPath: /home/messenger/messenger-server-home/chat_data
+            - name: messenger-log
+              mountPath: /home/messenger/messenger-server-home/chat_log 
+            - name: config
+              mountPath: /home/messenger/messenger-server-home/config/config.json
+              subPath: config.json
+            - name: firebase
+              mountPath: /home/messenger/messenger-server-home/config/tsp-messenger-9396d.json
+              subPath: firebase.json       
+          
+      volumes:
+        - name: messenger-data
+          nfs:
+            server: 10.10.19.125
+            path: /Chat-Data
+            readOnly: no
+        - name: messenger-log
+          nfs:
+            server: 10.10.19.125
+            path: /Chat_Logs
+            readOnly: no
+        - name: config
+          configMap:
+            name: config
+            defaultMode: 0755
+        - name: firebase
+          configMap:
+            name: firebase
+            defaultMode: 0755       

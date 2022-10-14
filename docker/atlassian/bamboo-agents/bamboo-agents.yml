@@ -1,0 +1,320 @@
+version: "3.7"
+
+
+services:
+
+  # linux1:
+  #   image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7
+  #   hostname: "linux1"
+  #   networks:
+  #     - traefik_internal
+  #     - postgres_test_net
+  #     - bamboo_net
+  
+  #   entrypoint: /entrypoint.sh
+  #   command: ["java -jar atlassian-bamboo-agent-installer-7.0.2.jar https://bamboo.okbtsp.com/agentServer/","https://bamboo.okbtsp.com"]
+  #   environment:
+  #     - "AGENT_VSPHERE_DISK=bamboo_linux1"
+  #     - VM_OPTS= -XX:MaxRAM=8g
+  #     - QT_PLUGIN_PATH=/home/user/Qt/5.7/gcc_64/plugins/
+  #     - JFROG_MAIN=jfrog-main
+      
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         memory: 12G
+  #         cpus: '12.0'
+  #       limits:
+  #         memory: 16G
+  #         cpus: '16.0'
+
+  #     restart_policy:
+  #       delay: 10s
+  #       max_attempts: 10
+  #       window: 60s
+  #     placement:
+  #       constraints:
+  #         - node.role == worker
+  #         # - node.labels.assignment == all
+  
+  #   configs:
+  #     - source: entrypoint.sh
+  #       target: /entrypoint.sh
+  #       mode: 0755
+  #     - source: maven-settings.xml
+  #       target: /etc/maven/settings.xml
+  #       mode: 0755
+
+  #   secrets:
+  #     - source: ciuser
+  #       target: /var/secrets/ciuser
+  #     - source: cipassword
+  #       target: /var/secrets/cipassword
+          
+  
+  #   volumes:
+  #     - linux1:/home/bamboo/bamboo-agent-home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+
+  linux2:
+    image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7
+    hostname: "linux2"
+    networks:
+      - traefik_internal
+      - postgres_test_net
+      - bamboo_net
+    entrypoint: /entrypoint.sh
+    command: https://bamboo.okbtsp.com
+    environment:
+      - "AGENT_VSPHERE_DISK=bamboo_linux2"
+      - VM_OPTS= -XX:MaxRAM=8g
+      - QT_PLUGIN_PATH=/home/user/Qt/5.7/gcc_64/plugins/
+      - JFROG_MAIN=jfrog-main
+    deploy:
+      resources:
+        reservations:
+          memory: 12G
+          cpus: '12.0'
+        limits:
+          memory: 16G
+          cpus: '16.0'
+        
+
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      placement:
+        constraints:
+          - node.role == worker
+          # - node.labels.assignment == all
+
+    configs:
+      - source: entrypoint.sh
+        target: /entrypoint.sh
+        mode: 0755
+      - source: maven-settings.xml
+        target: /etc/maven/settings.xml
+        mode: 0755
+
+    secrets:
+      - source: ciuser
+        target: /var/secrets/ciuser
+      - source: cipassword
+        target: /var/secrets/cipassword
+        
+
+    volumes:
+      - linux2:/home/bamboo/bamboo-agent-home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+  linux3:
+    image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7
+    hostname: "linux3"
+    networks:
+      - traefik_internal
+      - postgres_test_net
+      - bamboo_net
+
+    entrypoint: /entrypoint.sh
+    command: http://bamboo.okbtsp.com
+    environment:
+      - "AGENT_VSPHERE_DISK=bamboo_linux3"
+      - VM_OPTS= -XX:MaxRAM=8g
+      - QT_PLUGIN_PATH=/home/user/Qt/5.7/gcc_64/plugins/
+      - JFROG_MAIN=jfrog-main
+
+    deploy:
+      resources:
+        reservations:
+          memory: 12G
+          cpus: '12.0'
+        limits:
+          memory: 16G
+          cpus: '16.0'
+        
+
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      placement:
+        constraints:
+          - node.role == worker
+          # - node.labels.assignment == all
+
+    configs:
+      - source: entrypoint.sh
+        target: /entrypoint.sh
+        mode: 0755
+      - source: maven-settings.xml
+        target: /etc/maven/settings.xml
+        mode: 0755
+    
+    secrets:
+      - source: ciuser
+        target: /var/secrets/ciuser
+      - source: cipassword
+        target: /var/secrets/cipassword
+        
+
+    volumes:
+      - linux3:/home/bamboo/bamboo-agent-home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+
+  linux4:
+    image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7
+    hostname: "linux4"
+    networks:
+      - traefik_internal
+      - postgres_test_net
+      - bamboo_net
+    entrypoint: /entrypoint.sh
+    command: https://bamboo.okbtsp.com
+    environment:
+      - "AGENT_VSPHERE_DISK=bamboo_linux4"
+      - VM_OPTS= -XX:MaxRAM=8g
+      - QT_PLUGIN_PATH=/home/user/Qt/5.7/gcc_64/plugins/
+      - JFROG_MAIN=jfrog-main
+    deploy:
+      resources:
+        reservations:
+          memory: 12G
+          cpus: '12.0'
+        limits:
+          memory: 16G
+          cpus: '16.0'
+        
+
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      placement:
+        constraints:
+          - node.role == worker
+          # - node.labels.assignment == all
+
+    configs:
+      - source: entrypoint.sh
+        target: /entrypoint.sh
+        mode: 0755
+      - source: maven-settings.xml
+        target: /etc/maven/settings.xml
+        mode: 0755
+    
+    secrets:
+      - source: ciuser
+        target: /var/secrets/ciuser
+      - source: cipassword
+        target: /var/secrets/cipassword
+        
+
+    volumes:
+      - linux4:/home/bamboo/bamboo-agent-home
+      - /var/run/docker.sock:/var/run/docker.sock      
+
+
+  # linux-swarm:
+  #   image: registry.okbtsp.com/devops/bamboo-agent.full.qt5.7.0:7.0.3.7
+  #   hostname: "linux_swarm"
+  #   networks:
+  #     - traefik_internal
+  #     - postgres_test_net
+
+  #   entrypoint: /entrypoint.sh
+  #   command: https://bamboo.okbtsp.com
+  #   environment:
+  #           # - "AGENT_VSPHERE_DISK=bamboo_swarm_agent@OceanStore01-SP01-SSD-LUN07"
+  #           - VM_OPTS= -XX:MaxRAM=1g
+  #           - QT_PLUGIN_PATH=/home/user/Qt/5.7/gcc_64/plugins/
+  #           - JFROG_MAIN=jfrog-main
+  #   deploy:
+
+  #     resources:
+  #       limits:
+  #         memory: 2G
+  #         cpus: '2.0'
+
+  #     restart_policy:
+  #       delay: 10s
+  #       max_attempts: 10
+  #       window: 60s
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+
+  #   configs:
+  #     - source: entrypoint.sh
+  #       target: /entrypoint.sh
+  #       mode: 0755
+  #     - source: maven-settings.xml
+  #       target: /etc/maven/settings.xml
+  #       mode: 0755
+
+  #   secrets:
+  #     - source: ciuser
+  #       target: /var/secrets/ciuser
+  #     - source: cipassword
+  #       target: /var/secrets/cipassword
+        
+
+  #   volumes:
+  #     - linux-swarm:/home/bamboo/bamboo-agent-home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+
+configs:
+  entrypoint.sh:
+    file: ./entrypoint.sh
+  maven-settings.xml:
+    file: ./maven-settings.xml
+
+
+secrets:
+  ciuser:
+    external: true
+  cipassword:
+    external: true
+
+
+
+volumes:
+
+  linux1:
+    driver: nfs
+    driver_opts:
+        share: 10.10.19.21:/Bamboo-Agent-1
+
+  linux2:
+    driver: nfs
+    driver_opts:
+        share: 10.10.19.21:/Bamboo-Agent-2
+
+  linux3:
+    driver: nfs
+    driver_opts:
+        share: 10.10.19.21:/Bamboo-Agent-3
+
+  linux4:
+    driver: nfs
+    driver_opts:
+        share: 10.10.19.21:/Bamboo-Agent-4              
+  
+  linux-swarm:
+    driver: nfs
+    driver_opts:
+        share: 10.10.19.21:/Bamboo-Swarm-Agent
+
+networks:
+  traefik_internal:
+    external: true
+    name: traefik_internal
+  postgres_test_net:
+    external: true
+    name: postgres_test_net
+  bamboo_net:
+    external: true
+    name: bamboo_net    

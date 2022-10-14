@@ -1,0 +1,75 @@
+version: "3.7"
+
+services:
+  bamboo:
+    image: registry.okbtsp.com/devops/bamboo-server:7.0.2
+    networks:
+    - traefik_internal
+    - postgres_net
+    - bamboo_net
+
+    ports:
+      - 54663:54663
+
+    configs:
+      - source: bamboo_server.xml
+        target: /opt/atlassian/bamboo/conf/server.xml
+        mode: 0755
+
+    environment:
+
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Datlassian.plugins.enable.wait=300 -Dfile.encoding=utf-8 -Dsun.jnu.encoding=utf-8 -DXX:MaxRAM=16g
+      # - JVM_MINIMUM_MEMORY=512m
+      # - JVM_MAXIMUM_MEMORY=1024m  
+    deploy:
+      resources:
+        reservations:
+          memory: 16G
+          cpus: '4.0'
+
+      labels:
+        - traefik.docker.network=traefik_internal
+        - traefik.http.services.bamboo.loadbalancer.server.port=8085
+        - traefik.http.services.bamboo.loadbalancer.server.scheme=http
+        - traefik.http.services.bamboo.loadbalancer.passhostheader=true
+        - traefik.http.routers.bamboo.rule=Host(`bamboo.okbtsp.com`)
+        - traefik.http.routers.bamboo.tls=true
+        - traefik.http.routers.bamboo.entrypoints=websecure
+
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      placement:
+        constraints:
+          - node.role == worker
+          # - node.labels.assignment == all
+        
+    volumes:
+      - bamboo:/var/atlassian/application-data/bamboo
+      
+
+configs:
+  bamboo_server.xml:
+    file: server.xml
+
+volumes:
+
+  bamboo:
+    driver: nfs
+    driver_opts:
+      share: 10.10.19.21:/Bamboo-Server
+
+
+networks:
+   traefik_internal:
+     external: true
+     name: traefik_internal
+   postgres_net:
+     external: true
+     name: postgres_net
+   bamboo_net:
+     external: true
+     name: bamboo_net  
+
+    

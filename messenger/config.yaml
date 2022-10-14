@@ -1,0 +1,445 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: messenger-server
+  name: config
+  labels:
+    app: messenger
+data:
+  config.json: |
+    {
+        "ServiceSettings": {
+            "SiteURL": "http://chat.okbtsp.com",
+            "WebsocketURL": "",
+            "LicenseFileLocation": "",
+            "ListenAddress": ":8065",
+            "ConnectionSecurity": "",
+            "TLSCertFile": "cert/OKBTSP.crt",
+            "TLSKeyFile": "cert/OKBTSP.key",
+            "UseLetsEncrypt": false,
+            "LetsEncryptCertificateCacheFile": "./config/letsencrypt.cache",
+            "Forward80To443": false,
+            "ReadTimeout": 300,
+            "WriteTimeout": 300,
+            "MaximumLoginAttempts": 10,
+            "GoroutineHealthThreshold": -1,
+            "GoogleDeveloperKey": "",
+            "EnableOAuthServiceProvider": false,
+            "EnableIncomingWebhooks": true,
+            "EnableOutgoingWebhooks": true,
+            "EnableCommands": true,
+            "EnableOnlyAdminIntegrations": true,
+            "EnablePostUsernameOverride": false,
+            "EnablePostIconOverride": false,
+            "EnableAPIv3": false,
+            "EnableLinkPreviews": false,
+            "EnableTesting": false,
+            "EnableDeveloper": true,
+            "EnableSecurityFixAlert": false,
+            "EnableInsecureOutgoingConnections": true,
+            "AllowedUntrustedInternalConnections": "",
+            "EnableMultifactorAuthentication": true,
+            "EnforceMultifactorAuthentication": true,
+            "EnableUserAccessTokens": true,
+            "AllowCorsFrom": "",
+            "AllowCookiesForSubdomains": false,
+            "SessionLengthWebInDays": 30,
+            "SessionLengthMobileInDays": 30,
+            "SessionLengthSSOInDays": 30,
+            "SessionCacheInMinutes": 10,
+            "SessionIdleTimeoutInMinutes": 0,
+            "WebsocketSecurePort": 443,
+            "WebsocketPort": 8065,
+            "WebserverMode": "gzip",
+            "EnableCustomEmoji": false,
+            "EnableEmojiPicker": true,
+            "RestrictCustomEmojiCreation": "all",
+            "RestrictPostDelete": "all",
+            "AllowEditPost": "always",
+            "PostEditTimeLimit": 300,
+            "TimeBetweenUserTypingUpdatesMilliseconds": 5000,
+            "EnablePostSearch": true,
+            "EnableUserTypingMessages": true,
+            "EnableChannelViewedMessages": true,
+            "EnableUserStatuses": true,
+            "ExperimentalEnableAuthenticationTransfer": true,
+            "ClusterLogTimeoutMilliseconds": 2000,
+            "CloseUnusedDirectMessages": false,
+            "EnablePreviewFeatures": true,
+            "EnableTutorial": true,
+            "ExperimentalEnableDefaultChannelLeaveJoinMessages": true,
+            "ExperimentalGroupUnreadChannels": "disabled",
+            "ImageProxyType": "",
+            "ImageProxyURL": "",
+            "ImageProxyOptions": ""
+        },
+        "TeamSettings": {
+            "SiteName": "TspMessenger",
+            "MaxUsersPerTeam": 1000,
+            "EnableTeamCreation": true,
+            "EnableUserCreation": false,
+            "EnableOpenServer": true,
+            "RestrictCreationToDomains": "",
+            "EnableCustomBrand": false,
+            "CustomBrandText": "",
+            "CustomDescriptionText": "",
+            "RestrictDirectMessage": "any",
+            "RestrictTeamInvite": "all",
+            "RestrictPublicChannelManagement": "all",
+            "RestrictPrivateChannelManagement": "all",
+            "RestrictPublicChannelCreation": "all",
+            "RestrictPrivateChannelCreation": "all",
+            "RestrictPublicChannelDeletion": "all",
+            "RestrictPrivateChannelDeletion": "all",
+            "RestrictPrivateChannelManageMembers": "all",
+            "EnableXToLeaveChannelsFromLHS": false,
+            "UserStatusAwayTimeout": 300,
+            "MaxChannelsPerTeam": 2000,
+            "MaxNotificationsPerChannel": 1000,
+            "EnableConfirmNotificationsToChannel": true,
+            "TeammateNameDisplay": "username",
+            "ExperimentalTownSquareIsReadOnly": false,
+            "ExperimentalPrimaryTeam": "",
+            "DefaultMessengerTeamName": "main"
+        },
+        "ClientRequirements": {
+            "AndroidLatestVersion": "",
+            "AndroidMinVersion": "",
+            "DesktopLatestVersion": "",
+            "DesktopMinVersion": "0.3.0",
+            "IosLatestVersion": "",
+            "IosMinVersion": ""
+        },
+        "SqlSettings": {
+            "DriverName": "postgres",
+            "DataSource": "postgres://postgreswr:Zxc1234v@10.10.7.6:5432/OKBTSP",
+            "DataSourceReplicas": [],
+            "DataSourceSearchReplicas": [],
+            "MaxIdleConns": 20,
+            "MaxOpenConns": 300,
+            "Trace": false,
+            "AtRestEncryptKey": "c65issbsye5jkjecbqj7rr1qerfnqunq",
+            "QueryTimeout": 30
+        },
+        "LogSettings": {
+            "EnableConsole": true,
+            "ConsoleLevel": "INFO",
+            "EnableFile": true,
+            "FileLevel": "INFO",
+            "FileFormat": "",
+            "FileLocation": "/home/messenger/messenger-server-home/chat_log",
+            "EnableWebhookDebugging": true,
+            "EnableDiagnostics": true
+        },
+        "PasswordSettings": {
+            "MinimumLength": 5,
+            "Lowercase": false,
+            "Number": false,
+            "Uppercase": false,
+            "Symbol": false
+        },
+        "FileSettings": {
+            "EnableFileAttachments": true,
+            "EnableMobileUpload": true,
+            "EnableMobileDownload": true,
+            "MaxFileSize": 30000000,
+            "DriverName": "local",
+            "Directory": "/home/messenger/messenger-server-home/chat_data",
+            "EnablePublicLink": false,
+            "PublicLinkSalt": "kbpat1xuazwgdwwn4784f3gt8humz5ng",
+            "InitialFont": "DroidSans-Bold.ttf",
+            "AmazonS3AccessKeyId": "",
+            "AmazonS3SecretAccessKey": "",
+            "AmazonS3Bucket": "",
+            "AmazonS3Region": "",
+            "AmazonS3Endpoint": "s3.amazonaws.com",
+            "AmazonS3SSL": true,
+            "AmazonS3SignV2": false,
+            "AmazonS3SSE": false,
+            "AmazonS3Trace": false
+        },
+        "EmailSettings": {
+            "EnableSignUpWithEmail": true,
+            "EnableSignInWithEmail": true,
+            "EnableSignInWithUsername": true,
+            "SendEmailNotifications": false,
+            "UseChannelInEmailNotifications": false,
+            "RequireEmailVerification": false,
+            "FeedbackName": "",
+            "FeedbackEmail": "",
+            "FeedbackOrganization": "",
+            "EnableSMTPAuth": false,
+            "SMTPUsername": "",
+            "SMTPPassword": "",
+            "SMTPServer": "",
+            "SMTPPort": "",
+            "ConnectionSecurity": "",
+            "InviteSalt": "a3m94359cwxq5jhudzt5wchiie1wjkaq",
+            "SendPushNotifications": false,
+            "PushNotificationServer": "",
+            "PushNotificationContents": "generic",
+            "EnableEmailBatching": false,
+            "EmailBatchingBufferSize": 256,
+            "EmailBatchingInterval": 30,
+            "SkipServerCertificateVerification": false,
+            "EmailNotificationContentsType": "full",
+            "LoginButtonColor": "",
+            "LoginButtonBorderColor": "",
+            "LoginButtonTextColor": ""
+        },
+        "OtpSettings": {
+            "OtpCodeLength": 6,
+            "OtpCodeLifeTimeMilliseconds": 300000,
+            "AllowedCountryCodes": ["375", "90"]
+        },
+        "TeleSignSettings" : {
+            "TelesignBaseUrl": "https://rest-api.telesign.com/v1/",
+            "TelesignUserName": "",
+            "TelesignToken": "",
+            "TelesignMessageDescription": "TSP Messenger verification code: ",
+            "TelesignServiceName": "Phone code"
+        },
+        "SmsBySettings": {
+            "SmsByBaseUrl": "https://app.sms.by/api/v1",
+            "SmsByToken": "c2304a07e339f513f640870a6ce090f9",
+            "SmsByMessageText": "TSP Messenger code: %CODE%.",
+            "SmsByServiceName": "SMS.BY"
+        },
+        "FirebaseSettings": {
+            "FirebaseEnabled": true,
+            "FirebaseJsonCredentialsPath": "config",
+            "FirebaseProjectIds": ["tsp-messenger-9396d"],
+            "FirebaseRequiredEvents": ["group_added", "post_deleted", "posted", "post_edited", "user_added", "channel_viewed", "user_removed", "direct_added"]
+        },
+        "RateLimitSettings": {
+            "Enable": false,
+            "PerSec": 10,
+            "MaxBurst": 100,
+            "MemoryStoreSize": 10000,
+            "VaryByRemoteAddr": true,
+            "VaryByUser": false,
+            "VaryByHeader": ""
+        },
+        "PrivacySettings": {
+            "ShowEmailAddress": true,
+            "ShowFullName": true
+        },
+        "SupportSettings": {
+            "TermsOfServiceLink": "https://about.mattermost.com/default-terms/",
+            "PrivacyPolicyLink": "https://about.mattermost.com/default-privacy-policy/",
+            "AboutLink": "https://about.mattermost.com/default-about/",
+            "HelpLink": "https://about.mattermost.com/default-help/",
+            "ReportAProblemLink": "https://about.mattermost.com/default-report-a-problem/",
+            "SupportEmail": "feedback@mattermost.com"
+        },
+        "AnnouncementSettings": {
+            "EnableBanner": false,
+            "BannerText": "",
+            "BannerColor": "#f2a93b",
+            "BannerTextColor": "#333333",
+            "AllowBannerDismissal": true
+        },
+        "ThemeSettings": {
+            "EnableThemeSelection": true,
+            "DefaultTheme": "default",
+            "AllowCustomThemes": true,
+            "AllowedThemes": []
+        },
+        "GitLabSettings": {
+            "Enable": false,
+            "Secret": "",
+            "Id": "",
+            "Scope": "",
+            "AuthEndpoint": "",
+            "TokenEndpoint": "",
+            "UserApiEndpoint": ""
+        },
+        "GoogleSettings": {
+            "Enable": false,
+            "Secret": "",
+            "Id": "",
+            "Scope": "profile email",
+            "AuthEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+            "TokenEndpoint": "https://www.googleapis.com/oauth2/v4/token",
+            "UserApiEndpoint": "https://www.googleapis.com/plus/v1/people/me"
+        },
+        "Office365Settings": {
+            "Enable": false,
+            "Secret": "",
+            "Id": "",
+            "Scope": "User.Read",
+            "AuthEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+            "TokenEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+            "UserApiEndpoint": "https://graph.microsoft.com/v1.0/me"
+        },
+        "LdapSettings": {
+            "Enable": true,
+            "EnableSync": true,
+            "LdapServer": "10.10.7.3",
+            "LdapPort": 389,
+            "ConnectionSecurity": "",
+            "BaseDN": "OU=OKBTSP,DC=okbtsp,DC=local",
+            "BindUsername": "cn=chat, cn=Managed Service Accounts,dc=okbtsp,dc=local",
+            "BindPassword": "Zxc1234v",
+            "ForceUpdateFromLdap": true,
+            "ForceCreateFromLdap": true,
+            "UserFilter": "(&(!objectClass=computer)(objectClass=user)(objectClass=top)(objectClass=person)(objectClass=organizationalPerson)(sAMAccountName=%s))",
+            "LdapUserMapping":{
+                "FirstNameAttribute": "givenName",
+                "LastNameAttribute": "sn",
+                "EmailAttribute": "mail",
+                "UsernameAttribute": "sAMAccountName",
+                "NicknameAttribute": "givenName",
+                "IdAttribute": "sAMAccountName",
+                "PositionAttribute": "title",
+                "AvatarAttribute":"jpegPhoto",
+                "PhoneNumberAttribute": "mobile"
+            },
+            "LdapUserUpdateRestrictions":{
+                "FirstNameUpdate": true,
+                "LastNameUpdate": false,
+                "EmailUpdate": false,
+                "UsernameUpdate": false,
+                "NicknameUpdate": false,
+                "IdUpdate": false,
+                "PositionUpdate": false,
+                "AvatarUpdate": false,
+                "PhoneNumberUpdate": false,
+                "IsUserActiveUpdate": false
+            },
+            "SyncIntervalMinutes": 60,
+            "SkipCertificateVerification": false,
+            "QueryTimeout": 60,
+            "MaxPageSize": 0,
+            "LoginFieldName": "LDAPPP LOOOGIN",
+            "LoginButtonColor": "",
+            "LoginButtonBorderColor": "",
+            "LoginButtonTextColor": ""
+        },
+        "ComplianceSettings": {
+            "Enable": false,
+            "Directory": "/data",
+            "EnableDaily": false
+        },
+        "LocalizationSettings": {
+            "DefaultServerLocale": "en",
+            "DefaultClientLocale": "en",
+            "AvailableLocales": ""
+        },
+        "SamlSettings": {
+            "Enable": false,
+            "EnableSyncWithLdap": false,
+            "Verify": true,
+            "Encrypt": true,
+            "IdpUrl": "",
+            "IdpDescriptorUrl": "",
+            "AssertionConsumerServiceURL": "",
+            "ScopingIDPProviderId": "",
+            "ScopingIDPName": "",
+            "IdpCertificateFile": "",
+            "PublicCertificateFile": "",
+            "PrivateKeyFile": "",
+            "FirstNameAttribute": "cn",
+            "LastNameAttribute": "sn",
+            "EmailAttribute": "mail",
+            "UsernameAttribute": "uid",
+            "NicknameAttribute": "cn",
+            "LocaleAttribute": "",
+            "PositionAttribute": "",
+            "LoginButtonText": "With SAML",
+            "LoginButtonColor": "",
+            "LoginButtonBorderColor": "",
+            "LoginButtonTextColor": ""
+        },
+        "NativeAppSettings": {
+            "AppDownloadLink": "https://about.mattermost.com/downloads/1",
+            "AndroidAppDownloadLink": "https://about.mattermost.com/mattermost-android-app/",
+            "IosAppDownloadLink": "https://about.mattermost.com/mattermost-ios-app/"
+        },
+        "ClusterSettings": {
+            "Enable": false,
+            "ClusterName": "",
+            "OverrideHostname": "",
+            "UseIpAddress": true,
+            "UseExperimentalGossip": false,
+            "ReadOnlyConfig": true,
+            "GossipPort": 8074,
+            "StreamingPort": 8075
+        },
+        "MetricsSettings": {
+            "Enable": false,
+            "BlockProfileRate": 0,
+            "ListenAddress": ":8067"
+        },
+        "AnalyticsSettings": {
+            "MaxUsersForStatistics": 2500
+        },
+        "WebrtcSettings": {
+            "Enable": false,
+            "GatewayWebsocketUrl": "",
+            "GatewayAdminUrl": "",
+            "GatewayAdminSecret": "",
+            "StunURI": "",
+            "TurnURI": "",
+            "TurnUsername": "",
+            "TurnSharedKey": ""
+        },
+        "ElasticsearchSettings": {
+            "ConnectionUrl": "http://dockerhost:9200",
+            "Username": "elastic",
+            "Password": "changeme",
+            "EnableIndexing": false,
+            "EnableSearching": false,
+            "Sniff": true,
+            "PostIndexReplicas": 1,
+            "PostIndexShards": 1,
+            "AggregatePostsAfterDays": 365,
+            "PostsAggregatorJobStartTime": "03:00",
+            "IndexPrefix": "",
+            "LiveIndexingBatchSize": 1,
+            "BulkIndexingTimeWindowSeconds": 3600,
+            "RequestTimeoutSeconds": 30
+        },
+        "DataRetentionSettings": {
+            "EnableMessageDeletion": false,
+            "EnableFileDeletion": false,
+            "MessageRetentionDays": 365,
+            "FileRetentionDays": 365,
+            "DeletionJobStartTime": "02:00"
+        },
+        "MessageExportSettings": {
+            "EnableExport": false,
+            "ExportFormat": "actiance",
+            "DailyRunTime": "01:00",
+            "ExportFromTimestamp": 0,
+            "BatchSize": 10000,
+            "GlobalRelaySettings": {
+                "CustomerType": "A9",
+                "SmtpUsername": "",
+                "SmtpPassword": "",
+                "EmailAddress": ""
+            }
+        },
+        "JobSettings": {
+            "RunJobs": true,
+            "RunScheduler": true
+        },
+        "PluginSettings": {
+            "Enable": true,
+            "EnableUploads": false,
+            "Directory": "./plugins",
+            "ClientDirectory": "./client/plugins",
+            "Plugins": {},
+            "PluginStates": {
+                "jira": {
+                    "Enable": true
+                }
+            }
+        },
+        "DisplaySettings": {
+            "ExperimentalTimezone": false
+        },
+        "TimezoneSettings": {
+            "SupportedTimezonesPath": "timezones.json"
+        }
+    }

@@ -1,0 +1,118 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+        <offline>false</offline>
+        <servers>
+            <server>
+                <id>Linux</id>
+                    <username>CIUser</username>
+                    <password>BRRXksBn3Rg7Bh7Q</password>
+            </server>
+            <server>
+                <id>Windows</id>
+                    <username>CIUser</username>
+                    <password>BRRXksBn3Rg7Bh7Q</password>
+            </server>
+            <server>
+                <id>ARM</id>
+                    <username>CIUser</username>
+                    <password>BRRXksBn3Rg7Bh7Q</password>
+            </server>
+            <server>
+                <id>Linux184</id>
+                    <username>CIUser</username>
+                    <password>BRRXksBn3Rg7Bh7Q</password>
+            </server>
+
+
+        </servers>
+
+        <mirrors>
+                <mirror>
+                        <id>Linux</id>
+                        <mirrorOf>nexus</mirrorOf>
+                        <url>https://jfrog.okbtsp.com/artifactory/Linux</url>
+                </mirror>
+                <mirror>
+                        <id>Windows</id>
+                        <mirrorOf>nexus</mirrorOf>
+                        <url>https://jfrog.okbtsp.com/artifactory/Windows</url>
+                </mirror>
+                <mirror>
+                        <id>ARM</id>
+                        <mirrorOf>nexus</mirrorOf>
+                        <url>https://jfrog.okbtsp.com/artifactory/Windows</url>
+                </mirror>
+                <mirror>
+                        <id>Linux184</id>
+                        <mirrorOf>nexus</mirrorOf>
+                        <url>https://jfrog.okbtsp.com/artifactory/Windows</url>
+                </mirror>
+
+
+        </mirrors>
+
+        <profiles>
+                <profile>
+                        <id>Linux</id>
+
+                                <properties>
+                                        <nexus.path>https://jfrog.okbtsp.com/artifactory/Linux</nexus.path>
+                                </properties>
+
+                                <repositories>
+                                        <repository>
+                                                <id>Linux</id>
+                                                <url>https://jfrog.okbtsp.com/artifactory/Linux</url>
+                                                <releases><enabled>true</enabled></releases>
+                                                <snapshots><enabled>true</enabled></snapshots>
+                                        </repository>
+                                </repositories>
+                </profile>
+                <profile>
+                       <id>Windows</id>
+                               <properties>
+                                       <nexus.path>https://jfrog.okbtsp.com/artifactory/Windows</nexus.path>
+                               </properties>
+                               <repositories>
+                                       <repository>
+                                               <id>Windows</id>
+                                               <url>https://jfrog.okbtsp.com/artifactory/Windows</url>
+                                               <releases><enabled>true</enabled></releases>
+                                               <snapshots><enabled>true</enabled></snapshots>
+                                       </repository>
+                               </repositories>
+                       </profile>
+                <profile>
+                       <id>ARM</id>
+                               <properties>
+                                       <nexus.path>https://jfrog.okbtsp.com/artifactory/ARM</nexus.path>
+                               </properties>
+                               <repositories>
+                                       <repository>
+                                               <id>ARM</id>
+                                               <url>https://jfrog.okbtsp.com/artifactory/ARM</url>
+                                               <releases><enabled>true</enabled></releases>
+                                               <snapshots><enabled>true</enabled></snapshots>
+                                       </repository>
+                               </repositories>
+               </profile>
+               <profile>
+                       <id>Linux184</id>
+                               <properties>
+                                       <nexus.path>https://jfrog.okbtsp.com/artifactory/Linux184</nexus.path>
+                               </properties>
+                               <repositories>
+                                       <repository>
+                                               <id>Linux184</id>
+                                               <url>https://jfrog.okbtsp.com/artifactory/Linux184</url>
+                                               <releases><enabled>true</enabled></releases>
+                                               <snapshots><enabled>true</enabled></snapshots>
+                                       </repository>
+                               </repositories>
+               </profile>
+
+
+        </profiles>
+
+</settings>

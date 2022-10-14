@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+  bitbucket:
+    hostname: 'bitbucket'
+    image: atlassian/bitbucket:8.3.0
+    networks:
+    - traefik_internal
+    - docker_net
+    environment:
+      - SERVER_PROXY_NAME=repo.okbtsp.com
+      - SERVER_PROXY_PORT=443
+      - SERVER_SCHEME=https
+      - SERVER_SECURE=true
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Datlassian.plugins.enable.wait=300 -DXX:MaxRAM=12g
+    
+    ports:
+      - 7999:7999
+  
+    deploy:
+      resources:
+        reservations:
+          memory: 12G
+          cpus: '2.0'
+
+      labels:
+        - traefik.docker.network=traefik_internal
+        - traefik.http.routers.bitbucket.tls=true
+        - traefik.http.routers.bitbucket.entrypoints=websecure
+        - traefik.http.routers.bitbucket.rule=Host(`repo.okbtsp.com`)
+        - traefik.http.services.bitbucket.loadbalancer.server.port=7990
+        - traefik.http.services.bitbucket.loadbalancer.server.scheme=http
+        - traefik.http.services.bitbucket.loadbalancer.passhostheader=true
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    volumes:
+      - bitbucket:/var/atlassian/application-data/bitbucket
+      - bitbucket-shared:/var/atlassian/application-data/bitbucket/shared
+
+    
+volumes:
+  bitbucket:
+    external: true
+  bitbucket-shared:
+    external: true  
+
+networks:
+   traefik_internal:
+     external: true
+     name: traefik_internal
+   docker_net:
+    external: true
+    name: docker_net

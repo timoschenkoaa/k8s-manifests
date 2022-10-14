@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubegraf
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-logging  
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-dashboard
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jira
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bamboo
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bitbucket
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: confluence
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jfrog
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: awx
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: messenger-server     

@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  traefik:
+     image: traefik:v2.2 # The official v2 Traefik docker image
+     ports:
+       - "80:80"
+       - "8080:8080"
+       - "443:443"
+       - "465:465"
+       - "587:587"
+       - "993:993"
+       - "25:25"
+       - "143:143"
+#       - "10000:10000/udp"
+       - "9090:9090" 
+       - "9001:9001"
+
+     networks:
+       - traefik_net
+       - traefik_internal
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+       - traefik-configs:/etc/traefik
+       - traefik-log:/var/log/traefik
+     secrets:
+       - source: okbtsp-key
+         target: /certs/okbtsp.com/Certificate.key
+       - source: okbtsp-crt
+         target: /certs/okbtsp.com/Certificate.crt
+
+secrets:
+  okbtsp-crt:
+    external: true
+  okbtsp-key:
+    external: true
+
+volumes:
+  traefik-configs:
+    external: true
+  traefik-log:
+    external: true
+
+
+
+networks:
+   traefik_net:
+     external: true
+     name: traefik_net
+   traefik_internal:
+     external: true
+     name: traefik_internal

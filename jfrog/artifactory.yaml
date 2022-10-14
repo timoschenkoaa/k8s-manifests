@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: artifactory
+  namespace: jfrog
+  labels:
+    app: artifactory
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: artifactory
+  template:
+    metadata:
+      labels:
+        app: artifactory
+    spec:
+      hostname: artifactory
+      subdomain: artifactory-external
+      securityContext:
+        runAsUser: 1030
+        fsGroup: 1030
+      initContainers:
+      - name: "remove-lost-found"
+        image: "alpine:3.9"
+        command:
+        - 'sh'
+        - '-c'
+        - 'rm -rfv /var/opt/jfrog/artifactory/lost+found'
+        volumeMounts:
+        - name: artifactory-pro-volume
+          mountPath: "/var/opt/jfrog/artifactory"
+      containers:
+      - name: artifactory-pro-k8s
+        image: docker.bintray.io/jfrog/artifactory-pro:7.11.5
+        env:
+        - name: DB_TYPE
+          value: postgresql
+        - name: DB_USER
+          value: limiteduser
+        - name: DB_PASSWORD
+          value: NBRNgzznATn4f4wnskKFx8x
+        - name: DB_HOST
+          value: jfrog-postgresql.jfrog-postgresql-svc.jfrog.svc.cluster.local
+        # Make sure to keep the memory java args aligned with the resources definitions
+        - name: EXTRA_JAVA_OPTIONS
+          value: "-Xms1g -Xmx2g"
+        ports:
+        - containerPort: 8082
+        volumeMounts:
+        - mountPath: "/var/opt/jfrog/artifactory"
+          name: artifactory-pro-volume
+        # Make sure to keep the resources set with values matching EXTRA_JAVA_OPTIONS above
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "2.0"
+          limits:
+            memory: "12Gi"
+            cpu: "4.0"
+        readinessProbe:
+          httpGet:
+            path: '/artifactory/webapp/#/login'
+            port: 8082
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: '/artifactory/webapp/#/login'
+            port: 8082
+          initialDelaySeconds: 180
+          periodSeconds: 10
+      volumes:
+      - name: artifactory-pro-volume
+        persistentVolumeClaim:
+          claimName: pvc-jfrog
+      imagePullSecrets:
+      - name: docker-reg-secret

@@ -1,0 +1,63 @@
+version: "3.7"
+
+services:
+  confluence:
+    image: registry.okbtsp.com/devops/confluence-server:7.3.5
+    networks:
+    - traefik_internal
+    - docker_net
+
+    environment:
+      - ATL_PROXY_NAME=wiki.okbtsp.com
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_SCHEME=https
+      - ATL_TOMCAT_SECURE=true
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Datlassian.plugins.enable.wait=300 -DXX:MaxRAM=8g
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Datlassian.recovery.password=fkg7h4f3v6
+
+
+    configs:
+      - source: confluence-server.xml
+        target: /opt/atlassian/confluence/conf/server.xml
+        mode: 0755
+  
+    deploy:
+
+      resources:
+        reservations:
+          memory: 4G
+          cpus: '2.0'
+
+      labels:
+        - traefik.docker.network=traefik_internal
+        - traefik.http.routers.confluence.tls=true
+        - traefik.http.routers.confluence.entrypoints=websecure
+        - traefik.http.routers.confluence.rule=Host(`wiki.okbtsp.com`)
+        - traefik.http.services.confluence.loadbalancer.server.port=8090
+        - traefik.http.services.confluence.loadbalancer.server.scheme=http
+        - traefik.http.services.confluence.loadbalancer.passhostheader=true
+      restart_policy:
+        delay: 60s
+        condition: on-failure
+        max_attempts: 10
+
+    volumes:
+      - confluence:/var/atlassian/application-data/confluence
+
+volumes:
+  confluence:
+    external: true
+
+configs:
+   confluence-server.xml:
+     file: server.xml
+
+networks:
+   traefik_internal:
+     external: true
+     name: traefik_internal
+   docker_net:
+    external: true
+    name: docker_net
+
+    

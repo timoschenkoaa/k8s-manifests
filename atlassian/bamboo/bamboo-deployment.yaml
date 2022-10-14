@@ -1,0 +1,85 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bamboo
+  namespace: bamboo
+  labels:
+    app: bamboo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bamboo
+  template:
+    metadata:
+      labels:
+        app: bamboo
+    spec:
+      hostname: bamboo
+      subdomain: bamboo-external-svc
+      terminationGracePeriodSeconds: 300
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+
+      # initContainers:
+        # - name: homeperms
+        #   securityContext:
+        #   image: busybox
+        #   command: ["chown", "-R", "1000:1000", "/var/atlassian/application-data/bamboo"]
+        #   volumeMounts:
+        #     - mountPath: "/var/atlassian/application-data/bamboo/"
+        #       name: bamboo-server-workdir
+      containers:
+        - name: bamboo
+          image: registry.okbtsp.com/devops/bamboo-server:7.0.2
+          resources:
+            requests:
+              cpu: 4
+              memory: 8Gi
+            limits:
+              cpu: 4
+              memory: 16Gi
+          ports:
+            - containerPort: 8085
+              name: bamboo-web
+              protocol: TCP
+            - containerPort: 54663
+              name: ssh
+              protocol: TCP
+          env:
+            - name: JVM_SUPPORT_RECOMMENDED_ARGS
+              value: '-Datlassian.plugins.enable.wait=300 -Dfile.encoding=utf-8 -Dsun.jnu.encoding=utf-8 -DXX:MaxRAM=16g' 
+            # - name: JVM_MINIMUM_MEMORY
+            #   value: 8192m
+            # - name: JVM_MAXIMUM_MEMORY
+            #   value: 16384m
+            # - name: CATALINA_CONNECTOR_PROXYNAME
+            #   value: k8s-bamboo.okbtsp.com
+            # - name: CATALINA_CONNECTOR_SCHEME
+            #   value: https
+            # - name: CATALINA_CONNECTOR_SECURE
+            #   value: "true"
+            # - name: ATL_DB_DRIVER
+            #   value: org.postgresql.Driver
+            # - name: ATL_DB_TYPE
+            #   value: postgres72
+
+          volumeMounts:
+          - name: bamboo-server-workdir
+            mountPath: /var/atlassian/application-data/bamboo
+          - mountPath: /opt/atlassian/bamboo/conf/server.xml
+            subPath: server.xml
+            name: bamboo-config-web   
+        
+          
+      volumes:
+        - name: bamboo-server-workdir
+          nfs:
+            server: 10.10.150.126
+            path: /Bamboo-Server
+        - name: bamboo-config-web
+          configMap:
+            name: bamboo-config-web
+            defaultMode: 0755      

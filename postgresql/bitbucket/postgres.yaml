@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitbucket-postgresql
+  namespace: bitbucket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitbucket-postgresql  
+  template:
+    metadata:
+      labels:
+        app: bitbucket-postgresql
+    spec:
+      hostname: bitbucket-postgresql
+      subdomain: bitbucket-postgresql-svc
+      initContainers:
+      - name: chmod-er
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 1000:1000 /data"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /data
+      containers:
+        - name: bitbucket-postgresql
+          image: postgres:13.5
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /data
+          envFrom:
+            - configMapRef:
+                name: postgres-config    
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: pvc-bitbucket-postgresql        
+        

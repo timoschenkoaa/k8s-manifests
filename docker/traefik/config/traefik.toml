@@ -1,0 +1,59 @@
+## Static configuration
+[global]
+  sendAnonymousUsage = false
+
+[log]
+  level = "INFO"
+  filePath = "/var/log/traefik/traefik.log"
+
+[api]
+  insecure = true
+  dashboard = true
+  debug = true
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+    [entryPoints.web.http]
+    [entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to = "websecure"
+        scheme = "https"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+  [entryPoints.imaps]
+    address = ":993"
+
+  [entryPoints.smtps]
+    address = ":465"
+
+  [entryPoints.ssmtp]
+    address = ":587"
+
+  [entryPoints.smtp]
+    address = ":25"
+
+  [entryPoints.imap]
+    address = ":143"
+
+#  [entryPoints.streaming]
+#    address = ":10000/udp"
+
+  [entryPoints.jvb]
+    address = ":9090"
+
+[providers]
+  [providers.file]
+    directory = "/etc/traefik/configs"
+    watch = true
+  [providers.docker]
+    swarmMode = true
+#  [providers.consul]
+#    endpoints = ["10.10.7.49:8500","10.10.7.57:8500","10.10.7.61:8500","10.10.7.62:8500", "10.10.7.63:8500"]
+#    rootKey = "traefik"
+#    [providers.consul.tls]
+#      insecureSkipVerify = true
+

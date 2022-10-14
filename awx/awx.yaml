@@ -1,0 +1,18 @@
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+  namespace: awx
+spec:
+  service_type: NodePort
+  nodeport_port: 30080
+  postgres_configuration_secret: awx-postgres-configuration
+  projects_persistence: true
+  projects_existing_claim: pvc-awx
+  redis_capabilities:
+    - CHOWN
+    - SETUID
+    - SETGID
+  task_privileged: true
+  no_log: 'false'

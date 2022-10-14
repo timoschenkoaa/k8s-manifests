@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  jira:
+    image: atlassian/jira-core:8.14.0
+    networks:
+    - traefik_internal
+    - docker_net
+
+    environment:
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Datlassian.plugins.enable.wait=600 -XX:MaxRAM=24g
+      - -Datlassian.plugins.enable.wait=300
+
+    configs:
+      - source: server.xml
+        target: /opt/atlassian/jira/conf/server.xml
+        mode: 0755
+
+    deploy:
+
+      resources:
+        reservations:
+          memory: 12G
+          cpus: '4.0'
+  
+      labels:
+        - traefik.docker.network=traefik_internal
+        - traefik.http.routers.jira.tls=true
+        - traefik.http.routers.jira.entrypoints=websecure
+        - traefik.http.routers.jira.rule=Host(`jira.okbtsp.com`)
+        - traefik.http.services.jira.loadbalancer.server.port=8080
+        - traefik.http.services.jira.loadbalancer.server.scheme=http
+        - traefik.http.services.jira.loadbalancer.passhostheader=true
+        
+      restart_policy:
+        delay: 60s
+        max_attempts: 10
+
+
+    volumes:
+      - jira:/var/atlassian/application-data/jira
+
+
+volumes:
+  jira:
+    external: true
+
+configs:
+  server.xml:
+    file: server.xml
+    
+networks:
+   traefik_internal:
+     external: true
+     name: traefik_internal
+   docker_net:
+    external: true
+    name: docker_net
